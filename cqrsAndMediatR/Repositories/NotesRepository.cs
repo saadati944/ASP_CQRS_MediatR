@@ -17,7 +17,7 @@ public class NotesRepository
                 Name = $"Name_{i + 1}",
                 CreatedDate = DateTime.Now.AddDays(-i),
                 Description = $"Description_{i + 1}",
-                Status = (Dtos.TaskStatus)(random.Next() % 2 + 1)
+                Status = (Dtos.NoteStatus)(random.Next() % 2 + 1)
             });
     }
 
@@ -31,9 +31,11 @@ public class NotesRepository
         return _notes.FirstOrDefault(x => x.Id == id);
     }
 
-    public void AddNote(Note task)
+    public Note AddNote(Note task)
     {
+        task.Id = _notes.Count();
         _notes.Add(task);
+        return task;
     }
 
     public bool RemoveNote(Note task)

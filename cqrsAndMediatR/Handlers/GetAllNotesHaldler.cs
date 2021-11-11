@@ -5,16 +5,16 @@ using MediatR;
 
 namespace cqrsAndMediatR.Handlers;
 
-public class GetNoteHaldler : IRequestHandler<GetNoteQuery, Note>
+public class GetAllNotesHaldler : IRequestHandler<GetAllNotesQuery, IEnumerable<Note>>
 {
     private NotesRepository _notesRepository;
-    public GetNoteHaldler(NotesRepository notesRepository)
+    public GetAllNotesHaldler(NotesRepository notesRepository)
     {
         _notesRepository = notesRepository;
     }
-    public Task<Note> Handle(GetNoteQuery request, CancellationToken cancellationToken)
+    public Task<IEnumerable<Note>> Handle(GetAllNotesQuery request, CancellationToken cancellationToken)
     {
-        var note = _notesRepository.GetNote(request.Id);
-        return Task.Run(()=>note);
+        var notes = _notesRepository.GetNotes();
+        return Task.FromResult(notes);
     }
 }

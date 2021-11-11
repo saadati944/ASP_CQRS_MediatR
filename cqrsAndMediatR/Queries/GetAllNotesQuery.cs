@@ -3,11 +3,6 @@ using cqrsAndMediatR.Dtos;
 
 namespace cqrsAndMediatR.Queries;
 
-public class GetNoteQuery : IRequest<Note>
+public class GetAllNotesQuery : IRequest<IEnumerable<Note>>
 {
-    public int Id { get; }
-    public GetNoteQuery(int id)
-    {
-        Id = id;
-    }
 }

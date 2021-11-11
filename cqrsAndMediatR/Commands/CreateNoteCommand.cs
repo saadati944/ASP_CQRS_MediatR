@@ -1,16 +1,12 @@
-﻿namespace cqrsAndMediatR.Dtos;
+﻿using cqrsAndMediatR.Dtos;
+using MediatR;
 
-public class Note
+namespace cqrsAndMediatR.Commands;
+
+public class CreateNoteCommand : IRequest<Note>
 {
-    public int Id { get; set; }
     public string? Name { get; set; }
     public string? Description { get; set; }
     public DateTime? CreatedDate { get; set; }
     public NoteStatus Status { get; set; }
-}
-
-public enum NoteStatus
-{
-    NotChecked = 1,
-    Done = 2
 }

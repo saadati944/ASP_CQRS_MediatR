@@ -3,6 +3,7 @@ using cqrsAndMediatR.Dtos;
 using cqrsAndMediatR.Repositories;
 using MediatR;
 using cqrsAndMediatR.Queries;
+using cqrsAndMediatR.Commands;
 
 namespace cqrsAndMediatR.Controllers;
 
@@ -10,19 +11,17 @@ namespace cqrsAndMediatR.Controllers;
 [ApiController]
 public class NotesController : ControllerBase
 {
-    private NotesRepository _repository;
     private readonly ILogger<NotesController> _logger;
     private readonly IMediator _mediator;
 
-    public NotesController(NotesRepository notesRepository, ILogger<NotesController> logger, IMediator mediator)
+    public NotesController(ILogger<NotesController> logger, IMediator mediator)
     {
-        _repository = notesRepository;
         _logger = logger;
         _mediator = mediator;
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> GetAll()
     {
         var query = new GetAllNotesQuery();
         var result = await _mediator.Send(query);
@@ -30,7 +29,7 @@ public class NotesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetNote(int id)
     {
         var query = new GetNoteQuery(id);
         var result = await _mediator.Send(query);
@@ -40,17 +39,18 @@ public class NotesController : ControllerBase
     }
 
     [HttpPost]
-    public void Post([FromBody] Note task)
+    public async Task<IActionResult> Post([FromBody] CreateNoteCommand note)
     {
-        task.Id = _repository.GetNotes().Count();
-        _repository.AddNote(task);
+        var result = await _mediator.Send(note);
+        return CreatedAtAction("GetNote", new { id = result.Id }, result);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var task = _repository.GetNote(id);
-        if(task is not null && _repository.RemoveNote(task))
+        var command = new RemoveNoteCommand(id);
+        var removedNote = await _mediator.Send(command);
+        if(removedNote is not null)
             return Ok();
 
         return NotFound();
