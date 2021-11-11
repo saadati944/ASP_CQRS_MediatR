@@ -30,9 +30,13 @@ public class NotesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public Note Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-        return _repository.GetNote(id) ?? new Note();
+        var query = new GetNoteQuery(id);
+        var result = await _mediator.Send(query);
+        if(result is not null)
+            return Ok(result);
+        return NotFound();
     }
 
     [HttpPost]
